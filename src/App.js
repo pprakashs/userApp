@@ -1,25 +1,60 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [users, setUsers] = useState([]);
+	const [button, setButton] = useState({});
+	useEffect(() => {
+		(async function () {
+			const res = await fetch('https://jsonplaceholder.typicode.com/users');
+			const users = await res.json();
+			setUsers(users);
+		})();
+	}, []);
+	const handleClick = (id) => {
+		setButton((prevState) => {
+			if (prevState[id]) {
+				delete prevState[id];
+				return {
+					...prevState,
+				};
+			}
+			return {
+				...prevState,
+				[id]: id,
+			};
+		});
+	};
+	return (
+		<div className="App">
+			{console.log(button)}
+			<table className="table" width="100">
+				<thead>
+					<tr>
+						<th>#id</th>
+						<th>Name</th>
+						<th>Username</th>
+						<th>Email</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					{users.map((user) => (
+						<tr key={user.id}>
+							<th># {user.id}</th>
+							<td>{user.name}</td>
+							<td>{user.username}</td>
+							<td>{user.email}</td>
+							<td>
+								<button type="button" onClick={() => handleClick(user.id)}>
+									{button[user.id] ? 'Inactive' : 'Active'}
+								</button>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+	);
 }
 
 export default App;
